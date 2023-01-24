@@ -117,7 +117,7 @@ ui <- dashboardPage(
         box(
           id = "boxtaboverview",
           width = 12,
-          height = 400,
+          height = 900,
           title = NULL,
           status = "primary",
           solidHeader = TRUE,
@@ -133,14 +133,14 @@ ui <- dashboardPage(
           align = "center",
           box(
             width = 12,
-            height = 475,
+            height = 900,
             align = "center",
             title = "Flashcard Dataset",
             status = "primary",
             solidHeader = TRUE,
             collapsible = FALSE,
             uiOutput(outputId = "mTopicUI"),
-            DT::dataTableOutput("dt",height = 300,width = 450),
+            DT::dataTableOutput("dt",height = 800,width = 450),
             tags$style(HTML('table.dataTable tr.selected td{background-color: pink !important;}')),
             useShinyjs(),
             extendShinyjs(text = paste0("shinyjs.resetDTClick = function() { Shiny.onInputChange('dt_cell_clicked', null); }"),functions = c('foo','bar'))
@@ -154,7 +154,7 @@ ui <- dashboardPage(
           fluidRow(
             box(
               width = 12,
-              height = 475,
+              height = 900,
               align = "justify",
               title = "Flash Card",
               status = "primary",
@@ -173,7 +173,7 @@ ui <- dashboardPage(
         tabName = "tabdataset",
         box(
           width = 12,
-          height = 525, 
+          height = 1000, 
           align ="center",
           title ="Flash Card Dataset", 
           status = "primary",
@@ -181,7 +181,7 @@ ui <- dashboardPage(
           collapsible = FALSE,
           downloadButton("downloadCSV", "Download CSV",style = styleButtonBlue()),
           actionButton("downloadExcel", "Download Excel",style = styleButtonBlue()),
-          DT::dataTableOutput('mdatatable', height = 425),
+          DT::dataTableOutput('mdatatable', height = 900),
           tags$style(HTML('table.dataTable tr.selected td{background-color: pink !important;}'))
           
         ) #box closure
@@ -328,15 +328,14 @@ observeEvent(input$mTopic,{
         paste('<br>','<br>','<br>',vmy$mydata$Topic[xirow]), 
         paste('<h4>',vmy$mydata$Question[xirow],'<h4>'),""), 
       back = c(
-        paste('<h4><b><i>',"Definition",'</i></b><h5>',paste(vmy$mydata$Definition[xirow])),
+        paste('<h4><b><i>',"Answer",'</i></b><h5>',paste(vmy$mydata$Answer[xirow])),
         paste('<h4><b><i>',"Example(s)",'</i></b><h5>',paste(vmy$mydata$Examples[xirow])),
         paste('<h4><b><i>',"Comments / Strategies",'</i></b><h5>',paste(vmy$mydata$Comments[xirow])))
     )
     
     
-    
     output$mflashcardUI <- renderUI({
-      flashCardOutput("card1", width = 450,height = 350)
+      flashCardOutput("card1", width = 700,height = 900)
       
     })
     
