@@ -16,9 +16,6 @@ library(shinyalert)
 library(stringr) # to wrap text
 library(htmlwidgets)
 library(xlsx) #to save dataframe to Excel
-
-
-
 ###############################################################
 ##  Define URL variables that are using in the dashboard
 ###############################################################
@@ -40,7 +37,7 @@ styleButtonBlue<- function(){
   "white-space: normal;
                         text-align:center;
                         color: #ffffff; 
-                        background-color:#4682B4;
+                        background-color:#00c9cc;
                         border-color: #ffffff;
                         border-width:3px;
                         height:35px;
@@ -91,7 +88,7 @@ ui <- dashboardPage(
     column(
       width = 12,
       align='center',
-      actionBttn("mdummydffile", "Get Template",style = 'pill',color = 'warning',size = 'sm' ),
+      actionBttn("mdummydffile", "Get Template",style = 'pill',color = 'primary',size = 'sm' ),
       hr()
       )
   ),
@@ -100,15 +97,15 @@ ui <- dashboardPage(
       tabItem(
         tabName ="taboverview",
         box(
-          background = 'black',
+          background = 'teal',
           width = 12,
           height = 50,
           scrollX = FALSE,
           HTML(
             paste(
-              '<p text-align ="center"><h4><b><i>',
+              '<p text-align ="center"><h4><b>',
               'Flash Card - Overview & Citations',
-              '</i></b></p>'
+              '</b></p>'
             )
           )
         ),
@@ -117,7 +114,7 @@ ui <- dashboardPage(
           width = 12,
           height = 400,
           title = NULL,
-          status = "warning",
+          status = "primary",
           solidHeader = TRUE,
           collapsible = FALSE,
           uiOutput(outputId = 'mFlashcardOverview')
@@ -134,7 +131,7 @@ ui <- dashboardPage(
             height = 475,
             align = "center",
             title = "Flashcard Dataset",
-            status = "warning",
+            status = "primary",
             solidHeader = TRUE,
             collapsible = FALSE,
             uiOutput(outputId = "mTopicUI"),
@@ -155,7 +152,7 @@ ui <- dashboardPage(
               height = 475,
               align = "justify",
               title = "Flash Card",
-              status = "warning",
+              status = "primary",
               solidHeader = TRUE,
               collapsible = FALSE,
               align = "center",
@@ -174,7 +171,7 @@ ui <- dashboardPage(
           height = 525, 
           align ="center",
           title ="Flash Card Dataset", 
-          status = "warning",
+          status = "primary",
           solidHeader = TRUE,
           collapsible = FALSE,
           downloadButton("downloadCSV", "Download CSV",style = styleButtonBlue()),
@@ -214,7 +211,7 @@ server <- function(input, output,session) {
         text = tags$span(
           tags$h4(HTML(paste("Hi",'<br>',"You have selected '",ext,"' file type.",'<br>',"Should only be xlsx or xls file")),
                   style = "color: steelblue;")),
-        type = 'warning'
+        type = 'primary'
       )
       return()
     }
@@ -268,8 +265,8 @@ observeEvent(input$mTopic,{
                   fillContainer = getOption("DT.fillContainer", TRUE)
                   
     ) %>% 
-      DT::formatStyle( columns=names(mtempdf), target= 'row',color = 'black',
-                       backgroundColor = '#ffffed',
+      DT::formatStyle( columns=names(mtempdf), target= 'row',color = 'teal',
+                       backgroundColor = 'white',
                        fontWeight ='normal',lineHeight='75%')
     })  
   }
@@ -350,8 +347,8 @@ observeEvent(input$mTopic,{
     output$card1 <- renderFlashCard({
       flashCard(
         vmy$df1,
-        frontColor = "#090e87",
-        backColor = "#3443c9",
+        frontColor = "#009999",
+        backColor = "#00cccc",
         front_text_color = "white",
         back_text_color = "white",
         elementId = NULL
@@ -376,22 +373,22 @@ observeEvent(input$mTopic,{
                                                     list(width ='150px', targets = c(5))),
                                   initComplete = htmlwidgets::JS(
                                     "function(settings, json) {",
-                                    paste0("$(this.api().table().container()).css({'font-size': '", "12px", "'});"),
+                                    paste0("$(this.api().table().container()).css({'font-size': '", "12px", "',});"),
                                     "}")
                     ) ,
                    fillContainer = getOption("DT.fillContainer", TRUE)
                    
     ) %>% 
-      DT::formatStyle( columns=names(vmy$mydataOriginal), target= 'row',color = 'black',
-                       backgroundColor = '#ffffed',
+      DT::formatStyle(columns=names(vmy$mydataOriginal), target= 'row',color = 'black',
+                       backgroundColor = 'white',
                        fontWeight ='normal',lineHeight='100%')%>%
-      formatStyle(c(names(vmy$mydataOriginal)),target= 'cell', 'vertical-align'='top') %>% 
-      formatStyle(c(names(vmy$mydataOriginal)),target= 'cell', 'text-align' = 'left')
+      formatStyle(c(names(vmy$mydataOriginal)),target= 'cell', 'vertical-align'='top', backgroundColor='white') %>% 
+      formatStyle(c(names(vmy$mydataOriginal)),target= 'cell', 'text-align' = 'left', backgroundColor='white')
 
   })  
   
 
-  ### this is warning messge to remove existing df and create a blank new
+  ### this is warning message to remove existing df and create a blank new
   observeEvent(input$mdummydffile,{
     showModal(
       modalDialog(
