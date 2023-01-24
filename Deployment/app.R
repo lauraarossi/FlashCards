@@ -9,7 +9,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
-library(flashCard) 
+source("flashCard.R") # copy of "dev" version 0.1.1 (not available on CRAN as of 24-01-23)
 library(tibble)   # add_row to dataframe function in this package
 library(DT)
 library(dplyr)
@@ -49,6 +49,8 @@ styleButtonBlue<- function(){
                         width:140px;
                         font-size: 13px;"
 }
+
+flashCardHeight = 800
 
 ###############################################################
 ##  UI Coding starts here
@@ -117,7 +119,7 @@ ui <- dashboardPage(
         box(
           id = "boxtaboverview",
           width = 12,
-          height = 900,
+          height = flashCardHeight+100,
           title = NULL,
           status = "primary",
           solidHeader = TRUE,
@@ -133,14 +135,14 @@ ui <- dashboardPage(
           align = "center",
           box(
             width = 12,
-            height = 900,
+            height = flashCardHeight+100,
             align = "center",
             title = "Flashcard Dataset",
             status = "primary",
             solidHeader = TRUE,
             collapsible = FALSE,
             uiOutput(outputId = "mTopicUI"),
-            DT::dataTableOutput("dt",height = 800,width = 450),
+            DT::dataTableOutput("dt",height = flashCardHeight,width = 450),
             tags$style(HTML('table.dataTable tr.selected td{background-color: pink !important;}')),
             useShinyjs(),
             extendShinyjs(text = paste0("shinyjs.resetDTClick = function() { Shiny.onInputChange('dt_cell_clicked', null); }"),functions = c('foo','bar'))
@@ -154,7 +156,7 @@ ui <- dashboardPage(
           fluidRow(
             box(
               width = 12,
-              height = 900,
+              height = flashCardHeight+100,
               align = "justify",
               title = "Flash Card",
               status = "primary",
@@ -173,7 +175,7 @@ ui <- dashboardPage(
         tabName = "tabdataset",
         box(
           width = 12,
-          height = 1000, 
+          height = flashCardHeight+200, 
           align ="center",
           title ="Flash Card Dataset", 
           status = "primary",
@@ -181,7 +183,7 @@ ui <- dashboardPage(
           collapsible = FALSE,
           downloadButton("downloadCSV", "Download CSV",style = styleButtonBlue()),
           actionButton("downloadExcel", "Download Excel",style = styleButtonBlue()),
-          DT::dataTableOutput('mdatatable', height = 900),
+          DT::dataTableOutput('mdatatable', height = flashCardHeight+100),
           tags$style(HTML('table.dataTable tr.selected td{background-color: pink !important;}'))
           
         ) #box closure
@@ -335,7 +337,7 @@ observeEvent(input$mTopic,{
     
     
     output$mflashcardUI <- renderUI({
-      flashCardOutput("card1", width = 700,height = 900)
+      flashCardOutput("card1", width = 700,height = flashCardHeight+100)
       
     })
     
@@ -356,6 +358,7 @@ observeEvent(input$mTopic,{
         backColor = "#00cccc",
         front_text_color = "white",
         back_text_color = "white",
+        text_align="left",
         elementId = NULL
       )
     })
@@ -467,20 +470,14 @@ observeEvent(input$mTopic,{
                tags$p(
                  useShinyjs(),
                  HTML(paste('<h5><b>',"Value Addition:",'</b><br><h5>')),
-                 HTML(paste('<h5>',"I have taken the flashcard R script from",'<b>',"github.com/jienagu/flashCard_Shiny_Demo",'</b>',"and added the following features:",'<br>',
+                 HTML(paste('<h5>',"I have taken the flashcard R script from",'<b>',"https://github.com/ganapap1/FlashCard",'</b>',"and added the following features for my own use:",'<br>',
                             HTML(paste('<h5><p style="text-align:justify;">',
-                                       "1. Option to import an excel file with column headers i.e. Topic, Question, Definition, Examples, Comments; ",'<br>',
-                                       "2. Alternatively; there is an option to create standard template for flashcard; that could be downloaded as csv or excel file; ",'<br>',
-                                       "3. Option to upload an excel file.  The template could be updated and loaded back to the package",'<br>',
-                                       "4. Option to view the dataset as table",'<br>',
-                                       "5. Option to filter the questions by topic;",'<br>','<br>',
+                                       "1. Larger flashcards ",'<br>',
+                                       "2. Answers in flashcards support and recognize newlines in excel input (\n) ",'<br>',
+                                       "3. Download generic template without losing existing data",'<br>',
+                                       "4. Shinyapp.io deployment",'<br>',
                             HTML(paste('<h5><b>',"About me:",'</b><br><h5>')),
-                            HTML(paste0('<h5>',"I am a Chartered Accountant having 25+ years of experience in Finance & Accounting.",
-                                        " The Data visualization and Data Science are always at the back of my mind.",
-                                        " I am a 'Tableau Desktop Certified Associate and working in 'R' with specific reference to Shiny App.",'<br>',
-                                        " In the process of sharing knowledge; ", 
-                                        "I have a channel in YouTube on R Shiny App.  Copy the link and paste in browser to view", '<br>',
-                                        'https://www.youtube.com/channel/UCDmEAmoLuyE0h61aGpthGvA/videos'
+                            HTML(paste0('<h5>',"I am software developer and student acturary."
                                         ))
                  ))#inside HTML closure
                )) #outside HTML closure
