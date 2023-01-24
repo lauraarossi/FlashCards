@@ -1,3 +1,5 @@
+From user ganapap1: 
+
 # FlashCard
 Flash card tool in R Shiny App with data interactive and upload facilities.  
 Credits: 
@@ -24,3 +26,9 @@ I have taken the flashcard R script from github.com/jienagu/flashCard_Shiny_Demo
 This is a Shiny demo app using flashCard package by Jiena McLellan
 
 Live Demo on shinyapp.io: https://appforiarteam.shinyapps.io/flashCard_demo/
+
+# Added by me (lauraarossi): 
+- Larger flashcards 
+- Newlines allwoed in excel input text  
+- General template downlaoded on request 
+- Template downlaod doesn't remove existing data 
