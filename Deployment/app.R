@@ -328,7 +328,7 @@ observeEvent(input$mTopic,{
         paste('<br>','<br>','<br>',vmy$mydata$Topic[xirow]), 
         paste('<h4>',vmy$mydata$Question[xirow],'<h4>'),""), 
       back = c(
-        paste('<h4><b><i>',"Answer",'</i></b><h5>',paste(vmy$mydata$Answer[xirow])),
+        paste('<h4><b><i>',"Answer",'</i></b><h5>',paste(gsub("\n","<br>",vmy$mydata$Answer[xirow]))),
         paste('<h4><b><i>',"Example(s)",'</i></b><h5>',paste(vmy$mydata$Examples[xirow])),
         paste('<h4><b><i>',"Comments / Strategies",'</i></b><h5>',paste(vmy$mydata$Comments[xirow])))
     )
