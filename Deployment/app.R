@@ -17,7 +17,10 @@ library(shinyjs)
 library(shinyalert)
 library(stringr) # to wrap text
 library(htmlwidgets)
-library(xlsx) #to save dataframe to Excel
+library(readxl) #to save dataframe to Excel
+library(openxlsx)
+library(xlsx)
+
 ###############################################################
 ##  Define URL variables that are using in the dashboard
 ###############################################################
@@ -198,6 +201,7 @@ server <- function(input, output,session) {
   onevent("mouseleave", "sidebarCollapsed", shinyjs::addCssClass(selector = "body", class = "sidebar-collapse"))
   
   vmy <- reactiveValues(mydataOriginal=NULL,mydata = NULL,df1=NULL,irow=1)
+  vmy$mydataTemplate <- readxl::read_excel("Data Template.xlsx") 
   
   observeEvent(input$mfile,{
     ### interactive dataset 
@@ -395,7 +399,7 @@ observeEvent(input$mTopic,{
     showModal(
       modalDialog(
         title = "Warning",
-        paste("Are you sure delete existing and create Dummy Dataset?" ),
+        paste("Confirm you want to download a new data set template?" ),
         footer = tagList(
           modalButton("Cancel"),
           actionButton("dummyok", "Yes")
@@ -405,37 +409,15 @@ observeEvent(input$mTopic,{
     
   })
   
-  ### If user say OK, then delete the selected rows
+  ### If user say OK then download template
   observeEvent(input$dummyok, {
-    ### create dummy df
-    column1 <- c("Recruiting participants","Performing study","Performing study","Performing study","Performing study")
-    column2 <-c("Selection bias","Recall bias","Measurement bias","Procedure bias","Observer-expectancy bias")
-    column3 <-c("Nonrandom sampling or treatment allocation of subjects such that study population is not representative of target population. Most commonly a sampling bias.","Awareness of disorder alters recall by subjects; common in retrospective studies.","Information is gathered in a systemically distorted manner.","Subjects in different groups are not treated the same.","Researcher's belief in the efficacy of a treatment changes the outcome of that treatment (aka, Pygmalion effect).")
-    column4 <-c("Berkson bias-study population selected from hospital is less healthy than general population Non-response bias- participating subjects differ from nonrespondents in meaningful ways","Patients with disease recall exposure after learning of similar cases","Association between HTN and MI not observed when using faulty automatic sphygmomanometer Hawthorne effect-participants change behavior upon awareness of being observed","Patients in treatment group spend more time in highly specialized hospital units","An observer expecting treatment group to show signs of recovery is more likely to document positive outcomes")
-    column5 <-c("Randomization Ensure the choice of the right comparison/reference group","Decrease time from exposure to follow-up","Use objective, standardized, and previously tested methods of data collection that are planned ahead of time Use placebo group","Blinding and use of placebo reduce influence of participants and researchers","on procedures and interpretation of outcomes as neither are aware of group allocation")
     
-    dummydf <- data.frame(Topic=column1, Question=column2, Definition=column3, Examples=column4, Comments=column5)
-    vmy$mydataOriginal <- dummydf
+    ### create template df
     removeModal()
-    output$mTopicUI <- renderUI({
-      selectInput(inputId ="mTopic", label = "Select Topic",
-                  choices = c(unique(vmy$mydataOriginal$Topic),"Select ALL"),
-                  selected = "Select ALL",multiple = TRUE,width = '100%')
+    dummydf <- data.frame(read_excel("Data Template.xlsx"))
+    vmy$mydataTemplate <- dummydf
+    fnCreateFormattedExcel(vmy$mydataTemplate,"FlashcardDatasetTemplate")
     })
-    
-    observeEvent(input$mTopic,{
-      if ("Select ALL" %in% input$mTopic){
-        vmy$mydata <- vmy$mydataOriginal
-      }
-      else{
-        vmy$mydata <- vmy$mydataOriginal%>%dplyr::filter(Topic %in% input$mTopic)
-      }
-      
-      fnrenderFlashCardTbl(1)
-      
-    })
-    
-  })
   
   
   
@@ -449,11 +431,13 @@ observeEvent(input$mTopic,{
     }
   )
   
-  
+
   ### can download the table in Excel
   observeEvent(input$downloadExcel,{
     fnCreateFormattedExcel(vmy$mydataOriginal)
   }) 
+  
+
 
 #############################################
 ## Overview and Citations
@@ -511,19 +495,19 @@ observeEvent(input$mTopic,{
   ## Generate Excel file using xlsx package 
   #############################################
   
-  fnCreateFormattedExcel <- function(xdata){
+  fnCreateFormattedExcel <- function(xdata,filename_input=''){
     # create a new workbook for outputs
     #####################################
-    wb<-createWorkbook(type="xlsx")
+    wb<-createWorkbook()
 
     # Define some cell styles and column style
     #####################################
 
     # Styles for the data table row/column names
-    TABLE_ROWNAMES_STYLE <- CellStyle(wb) + Font(wb, isBold=TRUE)
-    TABLE_COLNAMES_STYLE <- CellStyle(wb) + Font(wb, isBold=TRUE) +
+    TABLE_ROWNAMES_STYLE <- xlsx::CellStyle(wb) + Font(wb, isBold=TRUE)
+    TABLE_COLNAMES_STYLE <- xlsx::CellStyle(wb) + Font(wb, isBold=TRUE) +
       Alignment(wrapText=TRUE, horizontal="ALIGN_CENTER")
-    TABLE_DATA_STYLE <- CellStyle(wb) + Font(wb, isBold=FALSE) +
+    TABLE_DATA_STYLE <- xlsx::CellStyle(wb) + Font(wb, isBold=FALSE) +
       Alignment(wrapText=TRUE, horizontal="ALIGN_LEFT",vertical='VERTICAL_TOP')
 
     # # Create a new sheet in the workbook
@@ -549,9 +533,12 @@ observeEvent(input$mTopic,{
     # Save the workbook to a file...
     #####################################
     mfilepath <- if (interactive() && .Platform$OS.type == "windows")
-      choose.dir(getwd(), "Choose a suitable folder")
+      choose.dir(getwd(), "Save file to:")
+
+    if (is.na(mfilepath))
+      return()
     
-    filename = paste0(mfilepath,"\\","FlashcardDataset", Sys.Date(), ".xlsx")
+    filename = paste0(mfilepath,"\\",filename_input, Sys.Date(), ".xlsx")
     saveWorkbook(wb, file = filename)
     
   }
