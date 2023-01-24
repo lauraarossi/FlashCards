@@ -5,9 +5,9 @@ account: larossi
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8110610
-bundleId: 6767700
+bundleId: 6768872
 url: https://larossi.shinyapps.io/FlashCards/
-when: 1674552137.36672
-lastSyncTime: 1674552137.36672
+when: 1674573131.89873
+lastSyncTime: 1674573131.89873
 asMultiple: FALSE
 asStatic: FALSE
